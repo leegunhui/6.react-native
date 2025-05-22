@@ -1,17 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import { Fragment } from 'react';
-import App from './src/App';
+
+
 
 export default function App() {
-  const name = "Mal-Dong";
+  let name = "Gil-Dong";
   return (
-    <View style={{flex:1,
-      backgroundColor:'#fff',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      <Text>zzzz</Text>
+    <View style={styles.container}>
+      <Text style={{fontSize:20}}>Open up App.js to start working on your app!</Text>
       <StatusBar style="auto" />
     </View>
   );
