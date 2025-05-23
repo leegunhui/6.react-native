@@ -8,7 +8,8 @@ import AlignItemsTest from './components/AlignItemsTest';
 import { Platform } from 'react-native';
 import ShadowBox from './ShadowBox';
 import Button from './components/Buttons';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
+
 const App = () => {
     return (
         <View style={viewStyles.container}>
@@ -37,7 +38,10 @@ const App = () => {
       )} */}
 
         {/* <ShadowBox /> */}
-        <Button />
+      <Container>
+      <Button title="Hanbit" />
+      <Button title="React Native" />
+      </Container>
         </View>
     
 
@@ -75,7 +79,7 @@ const styles = StyleSheet.create({
 
 const Container = styled.View`
   flex: 1;
-  background-color: #ffffff
+  background-color: #ffffff;
   align-items: center;
   justify-content: center;
 `;
