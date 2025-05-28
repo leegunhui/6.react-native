@@ -6,6 +6,7 @@ import Button from './components/Button'
 import { useState } from 'react'
 import Length from './components/Length'
 import Dog from './components/Dog'
+import ChangeTheme from './components/ChangeTheme'
 const Container = styled.View`
     flex:1;
     background-color: #fff;
@@ -27,7 +28,8 @@ const App = () => {
         {isVisible && <Form />} */}
     
         {/* <Length /> */}
-        <Dog />
+        {/* <Dog /> */}
+        <ChangeTheme/>
       </Container>
     );
   };
