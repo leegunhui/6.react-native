@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'react-native';
 import styled from 'styled-components';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 const Container = styled.SafeAreaView`
   align-items: center;
   background-color : #ffffff;
