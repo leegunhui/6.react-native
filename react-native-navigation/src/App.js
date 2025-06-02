@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { NavigationContainer } from '@react-navigation/native';
 import StackNavigation from './navigation/Stack';
 import TabNavigation from './navigation/Tab';
+import DrawerNavigation from './navigation/Drawer';
 
 const Container = styled.View`
     flex : 1;
@@ -15,7 +16,8 @@ const App = () => {
   return (
     <NavigationContainer>
         {/* <StackNavigation /> */}
-        <TabNavigation />
+        {/* <TabNavigation /> */}
+        <DrawerNavigation/>
     </NavigationContainer>
   );
 };
