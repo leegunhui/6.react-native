@@ -4,10 +4,11 @@ import { theme } from './theme'
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen'; // expo-splash-screen을 불러옴
-import { ThemeProvider } from 'styled-components';
+import { ThemeProvider } from 'styled-components/native';
 import { useState, useEffect } from 'react';
 import Navigation from './navigations';
 import { images } from './utils/images';
+import { Image } from 'react-native';
 
 // 스플래시 화면이 자동으로 숨겨지지 않도록 설정하여 초기화 작업이 완료될 때까지 유지함
 SplashScreen.preventAutoHideAsync();
