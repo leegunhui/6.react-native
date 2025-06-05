@@ -3,9 +3,13 @@ import styled from 'styled-components/native';
 import { Text /*,Button */ } from 'react-native';
 import { images } from '../utils/images';
 import { Image, Input, Button } from '../components';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { validateEmail, removeWhitespace } from '../utils/common'
+import { Alert } from 'react-native';
+import { login } from '../utils/firebase';
+import { ProgressContext, UserContext } from '../contexts';
+
 const Container = styled.View`
   flex: 1;
   justify-content: center;
@@ -30,6 +34,8 @@ const Login = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState('');
   //버튼의 활성화 상태를 관리하는 state
   const [disabled, setDisabled] = useState(true);
+  const {spinner} = useContext(ProgressContext);
+  const {dispatch} = useContext(UserContext);
 
   const _handleEmailChange = email => {
     const changedEmail = removeWhitespace(email);
@@ -43,7 +49,19 @@ const Login = ({ navigation }) => {
     setPassword(removeWhitespace(password));
   };
 
-  const _handleLoginButtonPress = () => { };
+  const _handleLoginButtonPress = async() => {
+      try {
+        spinner.start();
+        const user = await login({email, password});
+        //UserContext의 dispatch함수를 통해 user의 상태가 인증된 사용자 정보로 변경된다.
+        dispatch(user);
+        Alert.alert('Login Success', user.email);
+      } catch (error) {
+        Alert.alert('Login Error', error.message);
+      } finally{
+        spinner.stop();
+      }
+    };
 
   useEffect(() => {
     //로그인 버튼은 이메일과 비밀번호가 입력되어 있어야 하고, 오류 메시지가 없어야 활성화된다.
@@ -77,10 +95,10 @@ const Login = ({ navigation }) => {
           isPassword
         />
         <ErrorText>{errorMessage}</ErrorText>
-        
-        <Button 
-          title="Login" 
-          onPress={_handleLoginButtonPress} 
+
+        <Button
+          title="Login"
+          onPress={_handleLoginButtonPress}
           disabled={disabled}
         />
         <Button

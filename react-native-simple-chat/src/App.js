@@ -9,6 +9,8 @@ import { useState, useEffect } from 'react';
 import Navigation from './navigations';
 import { images } from './utils/images';
 import { Image } from 'react-native';
+import { ProgressProvider, UserProvider } from './contexts';
+
 
 // 스플래시 화면이 자동으로 숨겨지지 않도록 설정하여 초기화 작업이 완료될 때까지 유지함
 SplashScreen.preventAutoHideAsync();
@@ -66,8 +68,12 @@ const App = () => {
     return (
         // 로딩 완료 시 앱의 실제 UI를 렌더링
         <ThemeProvider theme={theme}>
-            <StatusBar barStyle="dark-content" /> {/* 상태 바 스타일 설정 */}
-            <Navigation />
+            <UserProvider>
+                <ProgressProvider>
+                    <StatusBar barStyle="dark-content" />
+                    <Navigation />
+                </ProgressProvider>
+            </UserProvider>
         </ThemeProvider>
     );
 };
