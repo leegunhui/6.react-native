@@ -42,6 +42,41 @@ export const logout = async () => {
   return await auth.signOut();
 };
 
+// (3) 현재 로그인한 사용자 정보 가져오기
+export const getCurrentUser = () => {
+  // auth.currentUser가 로그인된 사용자 객체를 반환
+  const { uid, displayName, email, photoURL } = auth.currentUser;
+  console.log(`displayName: ${displayName}`);
+  // 우리가 원하는 형태로 가공해서 반환
+  return {
+    uid,
+    name: displayName,
+    email,
+    photoUrl: photoURL,
+  };
+};
+
+// (4) 사용자 프로필 사진 업데이트
+export const updateUserPhoto = async photoUrl => {
+  // 현재 로그인한 사용자 객체
+  const user = auth.currentUser;
+  // 만약 photoUrl이 HTTPS로 시작하면 이미 URL이므로 그대로 사용
+  // 그렇지 않으면 업로드 과정을 거친 뒤 Firebase Storage URL 획득
+  const storageUrl = photoUrl.startsWith('https')
+    ? photoUrl
+    : await uploadImage(photoUrl);
+
+  // Firebase Auth의 updateProfile로 프로필 사진 주소 수정
+  await updateProfile(user, { photoURL: storageUrl });
+
+  // 업데이트된 사용자 정보 반환
+  return {
+    name: user.displayName,
+    email: user.email,
+    photoUrl: user.photoURL,
+  };
+};
+
 const uploadImage = async uri => {
 // 주어진 URI에서 Blob(바이너리 큰 객체)을 얻기 위해 Promise를 생성하고, 비동기적으로 실행합니다.
 const blob = await new Promise((resolve, reject) => {
