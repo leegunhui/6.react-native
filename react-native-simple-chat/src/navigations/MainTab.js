@@ -32,7 +32,6 @@ const MainTab = ({navigation,route}) => {
     return(
         <Tab.Navigator
             screenOptions={{
-                headerShown: false,
                 tabBarActiveTintColor: theme.tabActiveColor,
                 tabInactiveColor: theme.tabInactiveColor,
                 headerTitleAlign: 'center',
@@ -46,6 +45,15 @@ const MainTab = ({navigation,route}) => {
                             focused,
                             name: focused ? 'chat-bubble' : 'chat-bubble-outline',
                         }),
+                     headerRight: () =>
+                    (
+                        <MaterialIcons
+                            name="add"
+                            size={26}
+                            style={{margin:10}}
+                            onPress={() => navigation.navigate('Channel Creation')}
+                        />
+                    ),  
                 }}
             />
             <Tab.Screen 

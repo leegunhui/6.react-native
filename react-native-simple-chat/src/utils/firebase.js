@@ -1,17 +1,23 @@
-// firebase/app과 firebase/auth에서 필요한 함수만 임포트
+// 필요한 Firebase 함수만 선택적으로 임포트
 import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  updateProfile, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword 
+import {
+  getAuth,
+  updateProfile,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
 } from 'firebase/auth';
-import { 
-  getStorage, 
-  ref, 
-  uploadBytes, 
-  getDownloadURL 
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
 } from 'firebase/storage';
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+} from 'firebase/firestore';
 import config from '../../firebase.json';
 
 // Firebase 앱 초기화
@@ -20,7 +26,11 @@ export const app = initializeApp(config);
 // 인증 모듈 가져오기
 const auth = getAuth(app);
 
+// 스토리지 모듈 가져오기
 const storage = getStorage(app);
+
+// 파이어스토어 DB 모듈 가져오기
+export const db = getFirestore(app);
 
 // (1) 이메일/비밀번호 로그인
 export const login = async ({ email, password }) => {
@@ -143,7 +153,32 @@ export const signup = async ({email, password, name, photoUrl}) => {
     return user;
 }
 
+// 문서(채널) 생성하기
+export const createChannel = async ({ title, description }) => {
+  // 1) 'channels' 컬렉션 참조 가져오기
+  const channelCollection = collection(db, 'channels');
 
+  // 2) 새 문서에 대한 참조 생성 (자동으로 ID가 부여됨)
+  const newChannelRef = doc(channelCollection);
+
+  // 3) 채널에 할당될 고유 ID
+  const id = newChannelRef.id;
+
+  // 4) 새 채널에 들어갈 필드값 구성
+  const newChannel = {
+    id,
+    title,
+    description,
+    createdAt: Date.now(), // 타임스탬프 (epoch) 사용
+  };
+
+  // 5) setDoc으로 해당 문서 경로에 데이터 쓰기
+  //    doc() 참조에서 setDoc()을 호출
+  await setDoc(newChannelRef, newChannel);
+
+  // 6) 생성된 문서 ID 반환
+  return id;
+};
 
 
 
