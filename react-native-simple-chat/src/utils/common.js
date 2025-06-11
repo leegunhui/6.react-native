@@ -1,9 +1,32 @@
-export const validateEmail = email => {
-  const regex = /^[0-9?A-z0-9?]+(\.)?[0-9?A-z0-9?]+@[0-9?A-z]+\.[A-z]{2}.?[A-z]{0,3}$/;
-  return regex.test(email);
-};
+//올바른 이메일 형식인지 확인하는 함수
+//입력된 문자열에서 공백을 모두 제거하는 함수
 
-export const removeWhitespace = text => {
-  const regex = /\s/g; //문자열 전체에서 공백을 찾는다.
-  return text.replace(regex, '');
-};
+// /^[0-9?A-z]+(\.)?[0-9?A-z]+@[0-9?A-z]+\.[A-z]{2}.?[A-z]{0,3}$/
+// ^ : 문자열의 시작
+// [0-9?A-z]+ : 0-9, 대문자A ~ 소문자z까지, ? 중 하나 이상 반복
+// (\.)? : 마침표가 0번 또는 1번 등장
+// @ : @문자
+// \. : 마침표
+// [A-z]{2} : A-z범위 내 정확히 2글자
+// .? : 마침표가 0번 또는 1번
+// [A-z]{0,3} : A-z문자 0~3개
+// $ : 문자열의 끝
+export const validateEmail = email => {
+    const regex = /^[0-9?A-z]+(\.)?[0-9?A-z]+@[0-9?A-z]+\.[A-z]{2}.?[A-z]{0,3}$/;
+    return regex.test(email);
+}
+
+// /\s/ -> 공백문자 하나를 의미한다.
+// g -> global, 문자열 전체를 대상으로 전역 검색을 하겠다.
+export const removeWhitespce = text => {
+    const regex = /\s/g; //문자열 전체에서 공백을 찾는다.
+    return text.replace(regex,'');
+    //text 문자열에서 정규식에 해당하는 부분을 빈문자열로 바꿔서
+    //공백을 제거하겠다.
+}
+
+//[a-z0-9A-Z] : 알파벳대소문자,숫자포함한 한글자
+// + : 앞의 패턴이 1번이상 반복
+// ? : 앞의 패턴이 0번 또는 1번 나타나는 경우와 일치
+// {n} : 앞의 패턴이 정확히 n번 나오는 경우와 일치
+// {n,m} : 앞의 패턴이 n번에서 m번 사이만큼 반복

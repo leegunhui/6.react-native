@@ -1,82 +1,97 @@
-import React from 'react'
-import { StatusBar } from 'react-native'
-import { theme } from './theme'
-import { Asset } from 'expo-asset';
-import * as Font from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen'; // expo-splash-screen을 불러옴
-import { ThemeProvider } from 'styled-components/native';
+// 최상위 컴포넌트가 사용될 컴포넌트
 import { useState, useEffect } from 'react';
+import {StatusBar, Image} from 'react-native';
+
+// expo-asset : 로컬 이미지 / 파일을 앱에 미리 로드할 때 사용하는 패키지
+import {Asset} from 'expo-asset';
+
+// expo-font : 커스텀 폰트를 로드하는 라이브러리
+import * as Font from 'expo-font';
+
+// expo-splash-screen : 앱 실행시 스플래시 화면을 제어하는 라이브러리
+import * as SplashScreen from 'expo-splash-screen';
+import {ThemeProvider} from 'styled-components';
+import { theme } from './Theme';
 import Navigation from './navigations';
-import { images } from './utils/images';
-import { Image } from 'react-native';
-import { ProgressProvider, UserProvider } from './contexts';
+import {images} from "./utils/images";
+
+import { ProgressProvider,UserProvider } from './contexts/index';
 
 
-// 스플래시 화면이 자동으로 숨겨지지 않도록 설정하여 초기화 작업이 완료될 때까지 유지함
+// 앱 시작 시 스플래시 화면이 자동으로 사라지지 않도록 설정
+// 이 함수 호출 이후로는 내가 직접 hideAsync()를 호출할 때 까지
+// 스플래시 화면이 유지된다.
 SplashScreen.preventAutoHideAsync();
 
+// 이미지 캐싱 함수 정의
 const cacheImages = images => {
-    // 이미지 캐싱 함수: 문자열로 전달된 URL 이미지와 로컬 파일 이미지에 따라 각각 적절한 캐싱 방식으로 처리
-    return images.map(image => {
-        if (typeof image === 'string') {
-            return Image.prefetch(image); // URL로 제공된 이미지의 경우, Image.prefetch로 캐싱
-        } else {
-            return Asset.fromModule(image).downloadAsync(); // 로컬 파일의 경우, expo-asset에서 제공하는 다운로드 방식으로 캐싱
-        }
-    });
-};
+  // images 배열의 각 요소에 대해 다음과 같은 처리를 하겠다.
+  return images.map(image=> {
+    // image가 문자열이면(즉, 네트워크 상의 URL 이미지라면)
+    if(typeof image === 'string'){
+      // Image.prefetch : URL 이미지를 미리 네트워크에서 받아서 캐싱해놓는다.
+      return Image.prefetch(image);
+    } else{
+      // 문자열이 아니라면, 로컬파일로 간주한다.
+      // Asset.fromModule(image).downloadAsync(); : 로컬파일을 미리 디바이스 스토리지에 다운로드
+      return Asset.fromModule(image).downloadAsync();
+    }
+  })
+}
 
 const cacheFonts = fonts => {
-    // 폰트 캐싱 함수: 폰트 배열을 받아 각 폰트를 로드
-    return fonts.map(font => Font.loadAsync(font));
-};
-
+  return fonts.map(font => Font.loadAsync(font));
+}
 
 const App = () => {
-    const [isReady, setIsReady] = useState(false); // 초기화 여부를 추적하는 상태 변수
+  // 초기화 여부를 추적하는 상태 변수
+  const [isReady, setIsReady] = useState(false);
 
-    useEffect(() => {
-        // useEffect에서 비동기 함수 호출하여 리소스를 로드
-        const prepareResources = async () => {
-            try {
-                await _loadAssets(); // 리소스를 로드하는 비동기 함수 호출
-            } catch (error) {
-                console.warn(error); // 오류 발생 시 경고 메시지 출력
-            } finally {
-                setIsReady(true); // 로딩이 완료되면 isReady를 true로 설정
-                await SplashScreen.hideAsync(); // 스플래시 화면 숨김
-            }
-        };
-
-        prepareResources(); // 준비 함수 호출
-    }, []); // 빈 의존성 배열을 전달하여 컴포넌트가 마운트될 때 한 번만 실행
-
-    const _loadAssets = async () => {
-        const imageAssets = cacheImages([
-            require('../assets/splash.png'),
-            ...Object.values(images),
-        ]);
-        const fontAssets = cacheFonts([]);
-
-        await Promise.all([...imageAssets, ...fontAssets]);
+  useEffect(() => {
+    // useEffect에서 비동기 함수를 호출하여 리소스를 로드
+    const prepareResources = async() => {
+      try {
+        await _loadAssets();
+      } catch (error) {
+        console.warn(error);
+      } finally{
+        setIsReady(true); // 로딩이 완료되면 isReady를 true로 설정
+        await SplashScreen.hideAsync(); // 스플래시 화면을 숨김
+      }
     };
+    prepareResources();
+  },[])
 
-    if (!isReady) {
-        return null; // 로딩이 완료되지 않은 경우 화면을 빈 상태로 유지
-    }
+  const _loadAssets = async() => {
+    // 이미지와 폰트를 캐싱하여 리소스를 로드
+    // require()
+    // 로컬 파일 리소스(이미지, 동영상, 사운드 파일 등)를 가져오는데 사용된다.
+    const imageAssets = cacheImages([
+                              require('../assets/splash.png'),
+                              ...Object.values(images),
+                            ]);
+    const fontAssets = cacheFonts([]); // 추가적인 폰트가 있다면 이 배열에 추가
 
-    return (
-        // 로딩 완료 시 앱의 실제 UI를 렌더링
-        <ThemeProvider theme={theme}>
-            <UserProvider>
-                <ProgressProvider>
-                    <StatusBar barStyle="dark-content" />
-                    <Navigation />
-                </ProgressProvider>
-            </UserProvider>
-        </ThemeProvider>
-    );
-};
+    await Promise.all([...imageAssets, ...fontAssets]);
+  };
 
+  if(!isReady){
+    return null; // 로딩이 완료되지 않은 경우 화면을 빈 상태로 유지
+  }
+
+
+  return (
+    // 스타일드 컴포넌트의 ThemeProvider 컴포넌트를 사용해
+    // 스타일드 컴포넌트에서 정의된 theme를 사용할 수 있도록 작성했다.
+    <ThemeProvider theme={theme}>
+      <UserProvider>
+        <ProgressProvider>
+          <StatusBar barStyle='dark-content'/>
+          <Navigation />
+        </ProgressProvider>
+      </UserProvider>
+    </ThemeProvider>
+  )
+}
 
 export default App;
